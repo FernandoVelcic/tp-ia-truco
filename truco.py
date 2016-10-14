@@ -12,7 +12,7 @@ cards_order = [
     ["12E", "12O", "12C", "12B"],
     ["11E", "11O", "11C", "11B"],
     ["10E", "10O", "10C", "10B"],
-    ["7O", "7C"],
+    ["7B", "7C"],
     ["6E", "6O", "6C", "6B"],
     ["5E", "5O", "5C", "5B"],
     ["4E", "4O", "4C", "4B"],
@@ -30,7 +30,7 @@ cards_order = [
     ["12 de Espada", "12 de Oro", "12 de Copa", "12 de Basto"],
     ["11 de Espada", "11 de Oro", "11 de Copa", "11 de Basto"],
     ["10 de Espada", "10 de Oro", "10 de Copa", "10 de Basto"],
-    ["7 de Oro", "7 de Copa"],
+    ["7 de Basto", "7 de Copa"],
     ["6 de Espada", "6 de Oro", "6 de Copa", "6 de Basto"],
     ["5 de Espada", "5 de Oro", "5 de Copa", "5 de Basto"],
     ["4 de Espada", "4 de Oro", "4 de Copa", "4 de Basto"],
@@ -51,7 +51,7 @@ class Card:
         return self.description
 
     def __repr__(self):
-        return self.description
+        return self.description + " -> " + str(self.value)
 
     def compare(self, other):
         if not isinstance(other, Card):
@@ -69,30 +69,28 @@ class Round:
     def __init__(self, cards):
         self.cards = cards
 
-    def hand_result(self, hand):
-        return hand[0][0].compare(hand[0][1])
+    def hand_result(self, card1, card2):
+        return card1.compare(card2)
 
     def result(self):
-        hands_results = list(map(self.hand_result, 
-list(zip(self.cards))))
-        if hands_results[0] == 0:
-            return hands_results[1]
+        hands = zip(*self.cards)
+        results = map(lambda v: self.hand_result(*v), hands)
+        result = sum(i for i in results)
+        if result == 0:
+            return 1
+        elif result > 0:
+            return 1
         else:
-            sumed = sum(i for i in hands_results)
-            if sumed == 0:
-                return 1
-            elif sumed > 0:
-                return 1
-            else:
-                return -1
+            return -1
 
     def __repr__(self):
         return str(self.cards)
 
 
-cards = flatten([list(map(lambda x: Card(x, len(cards_order) - 
-card_value), equal_cards)) for card_value, equal_cards in 
-enumerate(cards_order)])
+def to_card(value):
+    return lambda description: Card(description, len(cards_order) - value)
+
+cards = flatten(map(to_card(value), card_names) for value, card_names in enumerate(cards_order))
 
 
 def generate_round():
