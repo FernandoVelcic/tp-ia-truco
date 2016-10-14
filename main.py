@@ -1,20 +1,17 @@
-import truco
+from training import test_success_rate, train
 from sklearn.neural_network import MLPClassifier
 
-round = truco.generate_round()
-print(round, round.result())
 
-
-X = [[3, 2], [1, 6]]
-Y = [1, 0]
+TRAINING_SET_SIZE = 100000
+TEST_SET_SIZE = 500
 
 
 # Docs at
-# http://scikit-learn.org/stable/modules/neural_networks_supervised.html#classification
-clf = MLPClassifier(solver='lbfgs', hidden_layer_sizes=30, random_state=0)
+# ANN http://scikit-learn.org/stable/modules/neural_networks_supervised.html#classification
+# MLP http://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html
+clf = MLPClassifier(solver='sgd', activation='logistic', hidden_layer_sizes=6, max_iter=100)
 
+train(clf, TRAINING_SET_SIZE)
+rate = test_success_rate(clf, TEST_SET_SIZE)
 
-
-
-# print(clf.predict([[3., 2.], [1., 3.]]))
-# print(clf.predict_proba([[3., 2.], [1., 3.]]))
+print("Success rate: {0} %".format(round(rate, 2)))

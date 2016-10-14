@@ -54,6 +54,12 @@ class Round:
     def hand_result(self, card1, card2):
         return card1.compare(card2)
 
+    def player_1_cards(self):
+        return self.cards[0]
+
+    def player_2_cards(self):
+        return self.cards[1]
+
     def result(self):
         hands = zip(*self.cards)
         results = list(map(lambda v: self.hand_result(*v), hands))
