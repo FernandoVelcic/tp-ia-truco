@@ -1,24 +1,5 @@
 import random
 
-"""
-cards_order = [
-    ["1E"],
-    ["1B"],
-    ["7E"],
-    ["7O"],
-    ["3E", "3O", "3C", "3B"],
-    ["2E", "2O", "2C", "2B"],
-    ["1O", "1C"],
-    ["12E", "12O", "12C", "12B"],
-    ["11E", "11O", "11C", "11B"],
-    ["10E", "10O", "10C", "10B"],
-    ["7B", "7C"],
-    ["6E", "6O", "6C", "6B"],
-    ["5E", "5O", "5C", "5B"],
-    ["4E", "4O", "4C", "4B"],
-]
-"""
-
 cards_order = [
     ["Ancho de espada"],
     ["Ancho de basto"],
@@ -46,6 +27,7 @@ class Card:
     def __init__(self, description, value):
         self.description = description
         self.value = value
+        self.identifier = None
 
     def __str__(self):
         return self.description
@@ -74,8 +56,19 @@ class Round:
 
     def result(self):
         hands = zip(*self.cards)
-        results = map(lambda v: self.hand_result(*v), hands)
+        results = list(map(lambda v: self.hand_result(*v), hands))
         result = sum(i for i in results)
+
+        if results[0] == 0:
+            # Caso de parda
+            if results[1] == 0:
+                if results[2] == 0:
+                    return 1
+                else:
+                    return results[2]
+            else:
+                return results[1]
+
         if result == 0:
             return 1
         elif result > 0:
@@ -90,7 +83,28 @@ class Round:
 def to_card(value):
     return lambda description: Card(description, len(cards_order) - value)
 
+
 cards = flatten(map(to_card(value), card_names) for value, card_names in enumerate(cards_order))
+
+
+for i, card in enumerate(cards):
+    # This is to identify the card with an unique number that well be the input of the neuron
+    card.identifier = i
+
+
+def find_card(matcher):
+    for card in cards:
+        if matcher(card):
+            return card
+    raise AssertionError("Could not found card")
+
+
+def get_card_by_id(identifier):
+    return find_card(lambda c: c.identifier == identifier)
+
+
+def get_card_by_description(description):
+    return find_card(lambda c: c.description == description)
 
 
 def generate_round():
