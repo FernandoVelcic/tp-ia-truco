@@ -6,7 +6,7 @@
 $ virtualenv venv -p /usr/bin/python3
 $ source venv/bin/activate
 $ pip install -r requirements.txt
-$ python main.py
+$ python main.py --import="training_set.csv"
 ```
 
 

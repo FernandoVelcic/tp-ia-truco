@@ -1,4 +1,5 @@
-from truco import cards, generate_round
+from truco import cards, cards_order, generate_round, flatten
+import csv
 
 
 def round_as_training_set(r):
@@ -37,6 +38,30 @@ def train(clf, n):
         x.append(input_cards)
         y.append(expected_output)
 
+    clf.fit(x, y)
+
+
+def exportCSV(filename, n):
+    ofile  = open(filename, "w")
+    writer = csv.writer(ofile)
+    writer.writerow(flatten(cards_order) + ["Result"])
+    for input_cards, expected_output in training_set(n):
+        writer.writerow(input_cards + [expected_output])
+    ofile.close()
+
+
+def importCSV(clf, filename):
+    ifile = open(filename, "r")
+    reader = csv.reader(ifile)
+
+    x = list()
+    y = list()
+
+    for row in list(reader)[1:]:
+        x.append([int(i) for i in row[:40]])
+        y.append(int(row[-1]))
+    ifile.close()
+    
     clf.fit(x, y)
 
 
